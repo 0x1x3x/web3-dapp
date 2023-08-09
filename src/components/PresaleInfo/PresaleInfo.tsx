@@ -115,12 +115,12 @@ const PresaleInfo: React.FC<PresaleInfoProps> = ({
       <Title align='center' c={presaleTextColor} size='30'>
         PRESALE ENDING SOON!
       </Title>
-      <Title align='center' my={15} size='30'>
+      <Title align='center' mt={15} mb={5} size='27'>
         {currentStageValue !== null
           ? `STAGE ${currentStageValue.toString()} ENDS IN`
           : 'STAGE N/A'}
       </Title>
-      <Title align='center' size='30'>
+      <Title align='center' size='27'>
         {remainingBlocks !== null && remainingBlocks >= 0 ? (
           <>
             {remainingHours.toString().padStart(2, '0')}:
