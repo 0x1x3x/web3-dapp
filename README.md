@@ -17,5 +17,4 @@ Repository >> https://github.com/Beincrypto/web3-assignment-contracts
 # Follow me
 
 Twitter https://twitter.com/0x1x3x
-# web3-token-sale-dapp
-# web3-dapp
+
