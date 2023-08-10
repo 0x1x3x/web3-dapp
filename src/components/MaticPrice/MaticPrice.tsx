@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MediaQuery, Text, Flex, rem } from '@mantine/core';
+import { MediaQuery, Box, Text, Flex, rem } from '@mantine/core';
 import { ethers } from 'ethers';
 
 interface MaticPriceProps {
@@ -22,17 +22,12 @@ const MaticPrice: React.FC<MaticPriceProps> = ({ currentPrice }) => {
     }
   };
 
-  // Updating price every second
   useEffect(() => {
     fetchTokenPrice();
-    const interval = setInterval(fetchTokenPrice, 1000);
-    return () => {
-      clearInterval(interval);
-    };
   }, [currentPrice]);
 
   return (
-    <>
+    <Box>
       <Flex justify='space-between' align='center' mt={10}>
         <MediaQuery
           query='(max-width: 62em) and (min-width: 36em)'
@@ -42,8 +37,9 @@ const MaticPrice: React.FC<MaticPriceProps> = ({ currentPrice }) => {
         </MediaQuery>
         <Text fw={700}>1TSTK = {tokenPrice} MATIC</Text>
       </Flex>
-    </>
+    </Box>
   );
 };
 
 export default MaticPrice;
+
