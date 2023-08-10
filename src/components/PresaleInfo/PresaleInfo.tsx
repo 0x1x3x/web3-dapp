@@ -2,10 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { Title, Text, useMantineTheme } from '@mantine/core';
 import { ethers } from 'ethers';
 
+// Constants
+const BLOCKS_IN_STAGE = 43200n;
+const BLOCKS_IN_HOUR = 1800n;
+const BLOCKS_IN_MINUTE = 30n;
+const ALCHEMY_RPC =
+  'https://polygon-mumbai.g.alchemy.com/v2/Fmy838YXsK_O-6z8ahbh3Y6YcMzuyxZo';
+
 interface PresaleInfoProps {
   currentStageBlockStart: bigint | null;
   currentStage: bigint | null;
 }
+
+const convertBlocksToTime = (
+  remainingBlocks: bigint
+): { hours: number; minutes: number } => {
+  const totalHours = Number(remainingBlocks / BLOCKS_IN_HOUR);
+  const totalMinutes = Number(remainingBlocks / BLOCKS_IN_MINUTE);
+
+  const hours = Math.floor(totalHours);
+  const minutes = Math.floor(totalMinutes - hours * 60);
+
+  return { hours, minutes };
+};
 
 const PresaleInfo: React.FC<PresaleInfoProps> = ({
   currentStageBlockStart,
@@ -25,23 +44,14 @@ const PresaleInfo: React.FC<PresaleInfoProps> = ({
   const [isDataReady, setIsDataReady] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<number>(Date.now());
 
-  // Rpc
-  const AlchemyRpc =
-    'https://polygon-mumbai.g.alchemy.com/v2/Fmy838YXsK_O-6z8ahbh3Y6YcMzuyxZo';
-
-  // CALC: Blocks and time
-  const blocksInStage = BigInt(43200); // Blocks in stage
-
-  const currentStageBlockEnds =
-    currentStageBlockStart !== null
-      ? currentStageBlockStart + BigInt(blocksInStage)
-      : 0n;
+  const currentStageBlockEnds = currentStageBlockStart
+    ? currentStageBlockStart + BLOCKS_IN_STAGE
+    : 0n;
 
   async function getCurrentBlock() {
     try {
-      const provider = new ethers.providers.JsonRpcProvider(AlchemyRpc);
+      const provider = new ethers.providers.JsonRpcProvider(ALCHEMY_RPC);
       const blockNumber = await provider.getBlockNumber();
-      console.log('current block:', blockNumber);
       return BigInt(blockNumber);
     } catch (error) {
       console.error('Error fetching current block:', error);
@@ -51,14 +61,9 @@ const PresaleInfo: React.FC<PresaleInfoProps> = ({
 
   const fetchData = async () => {
     try {
-      const stageStart = currentStageBlockStart ?? 0n;
       const currentBlock = await getCurrentBlock();
-      const remainingBlocks =
-        currentStageBlockEnds !== null && currentBlock !== null
-          ? currentStageBlockEnds - currentBlock
-          : 0n;
-
-      setRemainingBlocks(remainingBlocks);
+      const remaining = currentStageBlockEnds - (currentBlock || 0n);
+      setRemainingBlocks(remaining);
       setIsDataReady(true);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -70,38 +75,22 @@ const PresaleInfo: React.FC<PresaleInfoProps> = ({
   };
 
   useEffect(() => {
+    fetchData();
     const updateInterval = setInterval(() => {
       fetchData();
       updateCounter();
-    }, 1000);
-
-    fetchData();
+    }, 5000);
 
     return () => {
       clearInterval(updateInterval);
     };
-  }, [currentStageBlockStart, currentStageBlockEnds]);
+  }, [currentStageBlockStart]);
 
   useEffect(() => {
-    if (currentStage !== null) {
+    if (currentStage) {
       setCurrentStageValue(currentStage);
     }
   }, [currentStage]);
-
-  const convertBlocksToTime = (
-    remainingBlocks: bigint
-  ): { hours: number; minutes: number } => {
-    const blocksInHour = 1800n;
-    const blocksInMinute = 30n;
-
-    const totalHours = Number(remainingBlocks / blocksInHour);
-    const totalMinutes = Number(remainingBlocks / blocksInMinute);
-
-    const hours = Math.floor(totalHours);
-    const minutes = Math.floor(totalMinutes - hours * 60);
-
-    return { hours, minutes };
-  };
 
   const { hours: remainingHours, minutes: remainingMinutes } =
     convertBlocksToTime(remainingBlocks ?? 0n);
@@ -121,17 +110,15 @@ const PresaleInfo: React.FC<PresaleInfoProps> = ({
           : 'STAGE N/A'}
       </Title>
       <Title align='center' size='27'>
-        {remainingBlocks !== null && remainingBlocks >= 0 ? (
-          <>
-            {remainingHours.toString().padStart(2, '0')}:
-            {remainingMinutes.toString().padStart(2, '0')}
-          </>
-        ) : (
-          'Loading...'
-        )}
+        {remainingBlocks !== null && remainingBlocks >= 0n
+          ? `${remainingHours.toString().padStart(2, '0')}:${remainingMinutes
+              .toString()
+              .padStart(2, '0')}`
+          : 'Loading...'}
       </Title>
     </>
   );
 };
 
 export default PresaleInfo;
+
