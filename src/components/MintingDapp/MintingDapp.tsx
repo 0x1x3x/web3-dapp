@@ -155,6 +155,9 @@ const MintingDapp = () => {
     setInputError(null);
   };
 
+  const formattedPayableAmount = Number(payableAmount.toString()) / 1e18;
+  const displayAmount = formattedPayableAmount.toFixed(5);
+
   return (
     <>
       <Box>
@@ -191,6 +194,12 @@ const MintingDapp = () => {
           }
         />
         <Text size='xs'>* min 1 max 10000 per wallet</Text>
+
+        {currentPrice !== null && (
+          <Text size='md' mt={10}>
+            Total amount: {displayAmount} MATIC + gas
+          </Text>
+        )}
 
         <WalletBalance />
 
