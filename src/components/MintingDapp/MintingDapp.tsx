@@ -58,7 +58,7 @@ const MintingDapp = () => {
   if (stageDataError) {
     console.error('Error fetching currentStageData', stageDataError);
   }
-  console.log(currentStage);
+  console.log('Current stage:', currentStage);
 
   // DATA: Current Price Data
   const [currentPrice, setCurrentPrice] = useState<bigint | null>(null);
@@ -76,7 +76,7 @@ const MintingDapp = () => {
   if (priceDataError) {
     console.error('Error fetching currentPriceData', priceDataError);
   }
-  console.log(currentPrice);
+  console.log('Current price:', currentPrice);
 
   // DATA: Current Stage Sold Amount
   const [currentStageSoldAmount, setCurrentStageSoldAmount] = useState<
@@ -100,6 +100,7 @@ const MintingDapp = () => {
   if (soldAmountError) {
     console.error('Error fetching currentStageSoldAmount', soldAmountError);
   }
+  console.log('Current sold amount:', currentStageSoldAmount);
 
   // DATA: Current Stage Block Start
   const [currentStageBlockStart, setStageBlockStart] = useState<bigint | null>(
@@ -120,7 +121,7 @@ const MintingDapp = () => {
   if (blockStartError) {
     console.error('Error fetching currentStageBlockStart', blockStartError);
   }
-  console.log(currentStageBlockStart);
+  console.log('Current stage block start:', currentStageBlockStart);
 
   // CALC: PayableAmount
   const payableAmountInWei = currentPrice ? currentPrice * qty : BigInt(0);
